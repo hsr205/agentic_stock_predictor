@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = Field(..., description="Name of the application")
+    api_key: str = Field(..., description="API key for Alpha Vantage Connection")
 
     model_config = SettingsConfigDict(
         env_file=".env",
