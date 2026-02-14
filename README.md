@@ -8,6 +8,10 @@
 
 - [Initialization](#initialization)
 - [Environment Set-Up](#environment-set-up)
+  - [Configuration Management](#configuration-management)
+  - [Environment Variables](#environment-variables)
+  - [Configuration Module Structure](#configuration-module-structure)
+- [Application Execution](#application-execution)
 - [Data](#data)
 - [Sources](#sources)
 - [Conclusions](#conclusions)
@@ -82,20 +86,98 @@ poetry add numpy
 
 ## Environment Set-Up
 
-Describe how the working environment is prepared.
+### Configuration Management
 
-Include:
-- Installation steps
-- Virtual environment setup
-- Hardware requirements
-- OS requirements
-- Execution instructions
+This project uses a centralized configuration module located at:
+
+```
+config/config.py
+```
+
+The configuration system is built using **Pydantic Settings** and is responsible for:
+
+- Loading environment variables from a `.env` file
+- Validating required configuration values
+- Enforcing strong typing
+- Failing fast if required variables are missing
+
+---
+
+### Environment Variables
+
+A `.env` file must exist in the project root:
+
+```
+Final_Project_Materials/.env
+```
 
 Example:
-1. Create virtual environment
-2. Install dependencies
-3. Configure environment variables
-4. Run main script
+
+```
+APP_NAME=AGENTIC_STOCK_PREDICTOR
+```
+
+The `Settings` class inside `config.py` defines all application configuration parameters.
+
+The settings object is instantiated once:
+
+```python
+settings = Settings()
+```
+
+It can then be imported anywhere in the project:
+
+```python
+from config.config import settings
+```
+
+This ensures:
+
+- Centralized configuration
+- No duplicated environment reads
+- Strong validation guarantees
+- Clean separation of configuration from application logic
+
+---
+
+## Application Execution
+
+The entry point of the application is:
+
+```
+main/main.py
+```
+
+To execute the application correctly, it must be run as a module from the project root.
+
+---
+
+### Required Project Structure
+
+Ensure the following files exist:
+
+```
+main/__init__.py
+config/__init__.py
+```
+
+These files mark the directories as Python packages and allow proper module imports.
+
+---
+
+### Run the Application (Recommended Method)
+
+From the project root:
+
+```bash
+poetry run python -m main.main
+```
+
+This ensures:
+
+- The correct Poetry-managed virtual environment is used
+- Module imports resolve correctly
+- The project root is added to the Python path
 
 ---
 
