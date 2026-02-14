@@ -1,10 +1,16 @@
-from config.config import settings
-
+from data.intraday_market_data import IntraDayMarketData
+from logger.logger import AppLogger
+from logging import Logger
 
 
 def main() -> int:
-    print(f"Hello from {__name__}")
-    print(f"settings.app_name = {settings.app_name}")
+    logger:Logger = AppLogger().get_logger(__name__)
+
+    try:
+        intraday_market_data: IntraDayMarketData = IntraDayMarketData()
+        intraday_market_data.get_market_data()
+    except Exception as e:
+        logger.info(f"Exception Thrown: {e}")
 
     return 0
 
