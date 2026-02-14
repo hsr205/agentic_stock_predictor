@@ -123,16 +123,16 @@ Example:
 
 **List all references used in the project.**
 
-Include:
-- Academic papers
-- Documentation
-- Tutorials
-- Books
-- External datasets
+1. Soumo Chatterjee (2024). *7 applications of reinforcement learning in finance and trading*. [Neptune.ai.](https://neptune.ai/blog/7-applications-of-reinforcement-learning-in-finance-and-trading)
 
-Format:
-- Author. (Year). *Title*. Source.
-- Link (if applicable)
+2. Junhao Zhang, Yifei Lei (2022). Deep Reinforcement Learning for Stock Prediction
+. Wiley Online Library. [Wiley Online Library](https://onlinelibrary.wiley.com/doi/10.1155/2022/5812546)
+
+3. Ziyi (Queena) Zhou, Nicholas Stern, Julien Laasri (2025). Reinforcement Learning for Stock Transactions. arXiv. [arXiv](https://arxiv.org/html/2505.16099v2)
+
+**Format:**
+
+- Author. (Year). *Title*. Source. Link (if applicable)
 
 ---
 
