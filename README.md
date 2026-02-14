@@ -1,11 +1,24 @@
 # Agentic Stock Predictor
 
-<**DESCRIPTION-OF-PROJECT**>
+<p align="center">
+  An agent-based reinforcement learning system for intelligent stock prediction and decision-making.
+  <br/>
+  Built with structured configuration, reproducible environments, and research-backed methodology.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/github/stars/hsr205/agentic_stock_predictor?style=for-the-badge" />
+  <img src="https://img.shields.io/github/last-commit/hsr205/agentic_stock_predictor?style=for-the-badge" />
+  <img src="https://img.shields.io/github/license/hsr205/agentic_stock_predictor?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Python-3.12+-blue?style=for-the-badge&logo=python" />
+  <img src="https://img.shields.io/badge/Poetry-Dependency%20Management-blueviolet?style=for-the-badge" />
+</p>
 
 ---
 
 ## Table of Contents
 
+- [Overview](#overview)
 - [Initialization](#initialization)
 - [Environment Set-Up](#environment-set-up)
   - [Configuration Management](#configuration-management)
@@ -15,6 +28,12 @@
 - [Data](#data)
 - [Sources](#sources)
 - [Conclusions](#conclusions)
+
+---
+
+## Overview
+
+**ADD OVERVIEW SECTION MATERIAL**
 
 ---
 
