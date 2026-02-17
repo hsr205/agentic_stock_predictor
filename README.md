@@ -225,13 +225,19 @@ Example:
 
 Throughout the course of our project we will be following the intraday price movements of the following equities:
 
-1. <img src="https://logo.clearbit.com/apple.com" width="25" style="vertical-align:middle;"> **AAPL** - Apple Inc.
-2. <img src="https://logo.clearbit.com/nvidia.com" width="25" style="vertical-align:middle;"> **NVDA** - NVIDIA Corporation
-3. <img src="https://logo.clearbit.com/abc.xyz" width="25" style="vertical-align:middle;"> **GOOGL** - Alphabet Inc.
-4. <img src="https://logo.clearbit.com/microsoft.com" width="25" style="vertical-align:middle;"> **MSFT** - Microsoft Corporation
-5. <img src="https://logo.clearbit.com/amazon.com" width="25" style="vertical-align:middle;"> **AMZN** - Amazon.com Inc.
-6. <img src="https://logo.clearbit.com/meta.com" width="25" style="vertical-align:middle;"> **META** - Meta Platforms Inc.
-7. <img src="https://logo.clearbit.com/tesla.com" width="25" style="vertical-align:middle;"> **TSLA** - Tesla Inc.
+![TSLA](https://img.shields.io/badge/TSLA-Tesla-CC0000?logo=tesla&logoColor=white)
+
+![AAPL](https://img.shields.io/badge/AAPL-Apple-black?logo=apple)
+
+![META](https://img.shields.io/badge/META-Meta-0467DF?logo=meta&logoColor=white)
+
+![AMZN](https://img.shields.io/badge/AMZN-Amazon-FF9900?logo=amazon&logoColor=black)
+
+![MSFT](https://img.shields.io/badge/MSFT-Microsoft-5E5E5E?logo=microsoft&logoColor=white)
+
+![NVDA](https://img.shields.io/badge/NVDA-NVIDIA-76B900?logo=nvidia&logoColor=white)
+
+![GOOGL](https://img.shields.io/badge/GOOGL-Alphabet-4285F4?logo=google&logoColor=white)
 
 ---
 
