@@ -26,6 +26,7 @@
   - [Configuration Module Structure](#configuration-module-structure)
 - [Application Execution](#application-execution)
 - [Data](#data)
+  - [Equities To Follow](#equities-to-follow)
 - [Sources](#sources)
 - [Conclusions](#conclusions)
 
@@ -217,6 +218,20 @@ Example:
 - Number of features:
 - Target variable:
 - Cleaning steps performed:
+
+---
+
+### Equities To Follow
+
+Throughout the course of our project we will be following the intraday price movements of the following equities:
+
+1. <img src="https://logo.clearbit.com/apple.com" width="25" style="vertical-align:middle;"> **AAPL** - Apple Inc.
+2. <img src="https://logo.clearbit.com/nvidia.com" width="25" style="vertical-align:middle;"> **NVDA** - NVIDIA Corporation
+3. <img src="https://logo.clearbit.com/abc.xyz" width="25" style="vertical-align:middle;"> **GOOGL** - Alphabet Inc.
+4. <img src="https://logo.clearbit.com/microsoft.com" width="25" style="vertical-align:middle;"> **MSFT** - Microsoft Corporation
+5. <img src="https://logo.clearbit.com/amazon.com" width="25" style="vertical-align:middle;"> **AMZN** - Amazon.com Inc.
+6. <img src="https://logo.clearbit.com/meta.com" width="25" style="vertical-align:middle;"> **META** - Meta Platforms Inc.
+7. <img src="https://logo.clearbit.com/tesla.com" width="25" style="vertical-align:middle;"> **TSLA** - Tesla Inc.
 
 ---
 
