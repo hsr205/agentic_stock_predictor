@@ -245,12 +245,13 @@ Throughout the course of our project we will be following the intraday price mov
 
 **List all references used in the project.**
 
-1. Soumo Chatterjee (2024). *7 applications of reinforcement learning in finance and trading*. [Neptune.ai.](https://neptune.ai/blog/7-applications-of-reinforcement-learning-in-finance-and-trading)
+1. Soumo Chatterjee (2024). [7 applications of reinforcement learning in finance and trading](https://neptune.ai/blog/7-applications-of-reinforcement-learning-in-finance-and-trading)
 
-2. Junhao Zhang, Yifei Lei (2022). Deep Reinforcement Learning for Stock Prediction
-. Wiley Online Library. [Wiley Online Library](https://onlinelibrary.wiley.com/doi/10.1155/2022/5812546)
+2. Junhao Zhang, Yifei Lei (2022). [Deep Reinforcement Learning for Stock Prediction](https://onlinelibrary.wiley.com/doi/10.1155/2022/5812546)
 
-3. Ziyi (Queena) Zhou, Nicholas Stern, Julien Laasri (2025). Reinforcement Learning for Stock Transactions. arXiv. [arXiv](https://arxiv.org/html/2505.16099v2)
+3. Yasin, A. S., & Gill, P. S. (2024, November). [Reinforcement learning framework for quantitative trading](https://arxiv.org/html/2411.07585v1) 
+
+4. Ziyi (Queena) Zhou, Nicholas Stern, Julien Laasri (2025). [Reinforcement Learning for Stock Transactions](https://arxiv.org/html/2505.16099v2)
 
 **Format:**
 
