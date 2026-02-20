@@ -86,7 +86,7 @@ class AlpacaHistoricDataExtraction:
 
                 result_dataframe:pd.DataFrame = pd.concat(dataframe_list)
 
-                export_file_path: Path = Path(f"data/{file_name_str}")
+                export_file_path: Path = Path(f"historical_stock_data/{file_name_str}")
 
                 self.logger.info(f"\nExporting data to: {export_file_path}")
 
