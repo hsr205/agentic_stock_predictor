@@ -1,6 +1,6 @@
 from logging import Logger
 
-from data.alpaca_historic_data import AlpacaHistoricData
+from data.alpaca_historic_data_extraction import AlpacaHistoricDataExtraction
 from trading_account.alpaca_trading_account import AlpacaTradingAccount
 from logger.logger import AppLogger
 from alpaca.trading.enums import OrderSide
@@ -9,7 +9,7 @@ def main() -> int:
     logger: Logger = AppLogger().get_logger(__name__)
 
     try:
-        alpaca_historic_data:AlpacaHistoricData = AlpacaHistoricData()
+        alpaca_historic_data:AlpacaHistoricDataExtraction = AlpacaHistoricDataExtraction()
         alpaca_historic_data.export_historical_stock_data()
 
         # alpaca_trading_account: AlpacaTradingAccount = AlpacaTradingAccount()
