@@ -1,6 +1,6 @@
 from logging import Logger
 
-from data.alpaca_historic_data_extraction import AlpacaHistoricDataExtraction
+from data_extraction.alpaca_historic_data_extraction import AlpacaHistoricDataExtraction
 from trading_account.alpaca_trading_account import AlpacaTradingAccount
 from logger.logger import AppLogger
 from alpaca.trading.enums import OrderSide
