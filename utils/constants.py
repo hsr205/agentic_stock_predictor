@@ -6,7 +6,4 @@ class Constants:
 
     ALPACA_ACCOUNT_URL: str = "https://paper-api.alpaca.markets/v2/account"
 
-    TICKER_SYMBOL_LIST: list[str] = ["TESLA", "AAPL", "META", "AMZN", "MSFT", "NVDA", "GOOGL"]
-
-
-
+    TICKER_SYMBOL_LIST: list[str] = ["TSLA", "AAPL", "META", "AMZN", "MSFT", "NVDA", "GOOGL"]
