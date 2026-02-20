@@ -1,7 +1,6 @@
 import zlib
 from typing import Any
 
-import pandas as pd
 import requests
 from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderSide, TimeInForce, OrderType
@@ -13,9 +12,6 @@ from config.config import settings
 from logger.logger import AppLogger
 from utils.constants import Constants
 
-pd.set_option("display.max_columns", None)
-pd.set_option("display.width", None)
-
 
 class AlpacaTradingAccount:
 
@@ -25,10 +21,9 @@ class AlpacaTradingAccount:
         self._trading_client: TradingClient = TradingClient(self._api_key, self._api_secret_key, paper=True)
         self.logger = AppLogger.get_logger(self.__class__.__name__)
 
-    def execute_action(self, ticker_str: str, quantity:int, action_type: OrderSide) -> None:
+    def execute_action(self, ticker_str: str, quantity: int, action_type: OrderSide) -> None:
 
         try:
-
 
             market_order_request: MarketOrderRequest = MarketOrderRequest(
                 symbol=ticker_str,
@@ -42,19 +37,19 @@ class AlpacaTradingAccount:
                 order_data=market_order_request
             )
 
-            self.logger.info(f"Successful {market_order.side.name} {market_order.qty} share(s) of {market_order.symbol}")
+            self.logger.info(
+                f"Successful {market_order.side.name} {market_order.qty} share(s) of {market_order.symbol}")
 
         except Exception as e:
             self.logger.warning(f"Exception Thrown: {e}")
 
     def get_portfolio_positions_dict(self) -> list[dict[str, Any]]:
-        portfolio_list:list = self._trading_client.get_all_positions()
+        portfolio_list: list = self._trading_client.get_all_positions()
 
         portfolio_positions_list: list[dict[str, Any]] = []
 
         for position in portfolio_list:
-
-            ticker_data_dict:dict[str,Any] = {
+            ticker_data_dict: dict[str, Any] = {
                 "ticker_symbol": position.symbol,
                 "quantity": position.qty,
                 "qty_available": position.qty_available,
@@ -86,11 +81,11 @@ class AlpacaTradingAccount:
             cash_float: float = float(response_dict["cash"])
             equity_float: float = float(response_dict["equity"])
             last_equity_float: float = float(response_dict["last_equity"])
-            buying_power_float:float = float(response_dict["buying_power"])
+            buying_power_float: float = float(response_dict["buying_power"])
             portfolio_value_float: float = float(response_dict["portfolio_value"])
             effective_buying_power_float: float = float(response_dict["effective_buying_power"])
 
-            account_data_dict:dict[str,float] = {
+            account_data_dict: dict[str, float] = {
                 "cash": cash_float,
                 "equity": equity_float,
                 "last_equity": last_equity_float,
