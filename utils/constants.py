@@ -3,3 +3,5 @@ class Constants:
     LOGGER_COLOR_WHITE: str = "\033[60m"
     LOGGER_COLOR_ORANGE: str = "\033[33m"
     LOGGER_COLOR_DARK_RED: str = "\033[31m"
+
+    TICKER_SYMBOL_LIST: list[str] = ["TESLA", "AAPL", "META", "AMZN", "MSFT", "NVDA", "GOOGL"]
