@@ -10,7 +10,7 @@ def main() -> int:
 
     try:
         alpaca_historic_data:AlpacaHistoricDataExtraction = AlpacaHistoricDataExtraction()
-        alpaca_historic_data.export_historical_stock_data()
+        alpaca_historic_data.export_historical_stock_data(year_of_data_to_collect=2025)
 
         # alpaca_trading_account: AlpacaTradingAccount = AlpacaTradingAccount()
         # # alpaca_trading_account.execute_action(ticker_str="AMZN",quantity=1,action_type=OrderSide.BUY)
