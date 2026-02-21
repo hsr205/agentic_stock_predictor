@@ -117,7 +117,7 @@ class AlpacaHistoricDataExtraction:
 
         stock_dataframe = stock_dataframe.between_time(start_time="09:30", end_time="16:00")
         stock_dataframe = stock_dataframe.reset_index()[
-            ["symbol_id", "timestamp", "open", "close", "high", "low", "volume"]]
+            ["symbol", "symbol_id", "timestamp", "open", "close", "high", "low", "volume"]]
 
         stock_dataframe_list.append(stock_dataframe)
 
