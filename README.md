@@ -25,7 +25,7 @@
   - [Environment Variables](#environment-variables)
   - [Configuration Module Structure](#configuration-module-structure)
 - [Application Execution](#application-execution)
-- [Data](#data)
+- [Exporting Historical Stock Data](#exporting-historical-stock-data)
   - [Equities To Follow](#equities-to-follow)
 - [Sources](#sources)
 - [Conclusions](#conclusions)
