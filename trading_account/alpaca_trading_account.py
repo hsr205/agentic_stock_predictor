@@ -1,4 +1,3 @@
-import zlib
 from typing import Any
 
 import requests
@@ -99,14 +98,3 @@ class AlpacaTradingAccount:
 
         except Exception as e:
             self.logger.error(f"Exception thrown: {e}")
-
-    def _get_ticker_symbol_unique_label_dict(self) -> dict[str, int]:
-        ticker_symbol_dict: dict[str, int] = {}
-        ticker_symbol_list: list[str] = Constants.TICKER_SYMBOL_LIST
-
-        for ticker_str in ticker_symbol_list:
-            ticker_hash_value: int = zlib.adler32(ticker_str.encode('utf-8'))
-
-            ticker_symbol_dict[ticker_str] = ticker_hash_value
-
-        return ticker_symbol_dict
