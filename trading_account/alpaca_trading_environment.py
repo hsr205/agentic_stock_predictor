@@ -12,7 +12,7 @@ from logger.logger import AppLogger
 from utils.constants import Constants
 
 
-class AlpacaTradingAccount:
+class AlpacaTradingEnvironment:
 
     def __init__(self) -> None:
         self._api_key: str = settings.api_key
@@ -42,7 +42,7 @@ class AlpacaTradingAccount:
         except Exception as e:
             self.logger.warning(f"Exception Thrown: {e}")
 
-    def get_portfolio_positions_dict(self) -> list[dict[str, Any]]:
+    def get_portfolio_positions_list(self) -> list[dict[str, Any]]:
         portfolio_list: list = self._trading_client.get_all_positions()
 
         portfolio_positions_list: list[dict[str, Any]] = []
@@ -98,3 +98,17 @@ class AlpacaTradingAccount:
 
         except Exception as e:
             self.logger.error(f"Exception thrown: {e}")
+
+    def test_method(self) -> None:
+        account_data_dict: dict[str, float] = self.get_account_data_dict()
+        portfolio_positions_list: list[dict[str, Any]] = self.get_portfolio_positions_list()
+
+        for key, value in account_data_dict.items():
+            self.logger.info(f"key = {key} -> value = {value}")
+
+        self.logger.info("=" * 100)
+
+        for dict_obj in portfolio_positions_list:
+
+            for key, value in dict_obj.items():
+                self.logger.info(f"key = {key} -> value = {value}")
