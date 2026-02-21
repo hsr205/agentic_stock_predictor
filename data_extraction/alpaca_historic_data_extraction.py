@@ -28,7 +28,7 @@ class AlpacaHistoricDataExtraction:
                                                                                                   self._api_secret_key)
         self.logger = AppLogger.get_logger(self.__class__.__name__)
 
-    def export_historical_stock_data(self, year_of_data_to_collect: int) -> None:
+    def export_historical_stock_data(self, year_of_data_to_collect: int = 2025) -> None:
         try:
 
             for ticker_symbol in tqdm(Constants.TICKER_SYMBOL_LIST, desc="Extracting Historical Stock Data"):
@@ -117,7 +117,7 @@ class AlpacaHistoricDataExtraction:
 
         stock_dataframe = stock_dataframe.between_time(start_time="09:30", end_time="16:00")
         stock_dataframe = stock_dataframe.reset_index()[
-            ["symbol", "symbol_id", "timestamp", "open", "close", "high", "low", "volume"]]
+            ["symbol_id", "timestamp", "open", "close", "high", "low", "volume"]]
 
         stock_dataframe_list.append(stock_dataframe)
 
