@@ -201,23 +201,45 @@ This ensures:
 
 ---
 
-## Data
+## Exporting Historical Stock Data
 
-**Describe the data used in the project.**
+## Purpose
 
-Include:
-- Data source
-- Data format
-- Preprocessing steps
-- Feature descriptions
-- Data splits (train/test/validation)
+Before training any reinforcement learning agent on financial markets, we must first collect clean, structured historical data.
 
-Example:
-- Dataset name:
-- Number of samples:
-- Number of features:
-- Target variable:
-- Cleaning steps performed:
+In reinforcement learning, the environment is defined by how the system evolves over time. For a trading agent, this evolution is driven by historical price movements.
+
+This method exports minute-level stock data for an entire year into CSV files so it can later be used to construct a reinforcement learning environment.
+
+Exporting to CSV ensures:
+
+- Reproducibility  
+- Separation between data collection and training  
+- Compatibility with pandas, NumPy, PyTorch, and other ML tools  
+
+---
+
+## What the Method Does
+
+The method:
+
+```python
+export_historical_stock_data(self, year_of_data_to_collect: int)
+```
+
+For each ticker symbol:
+
+1. Iterates through all 12 months of the specified year  
+2. Requests minute-level stock bars  
+3. Cleans and structures the returned data  
+4. Aggregates all months into one yearly DataFrame  
+5. Exports the final dataset to a local CSV file  
+
+Each ticker produces one CSV file containing a full year of minute-resolution data.
+
+---
+
+This export step forms the foundation for constructing a trading Markov Decision Process and training a reinforcement learning agent.
 
 ---
 
