@@ -17,6 +17,28 @@ from trading_account.historical_stock_data_obj import HistoricalStockDataObj
 from utils.constants import Constants
 
 
+# # TODO: Look into the following for live second-to-second training data using a websocket as opposed to the REST API
+# # NOTE: Max pings per minute is 200
+
+# from alpaca.data.live import StockDataStream
+#
+# # Use PAPER API KEY and SECRET
+# api_key = "PAPER_API_KEY"
+# secret_key = "PAPER_SECRET_KEY"
+#
+# stream = StockDataStream(api_key, secret_key)
+#
+# async def handle_bar(data):
+#     # Process incoming bar data
+#     print(f"Bar: {data}")
+#
+# # Subscribe to 1-minute bars for AAPL
+# stream.subscribe_bars(handle_bar, "AAPL")
+#
+# # Start the stream
+# stream.run()
+
+
 class AlpacaTradingEnvironment:
     ObsType: TypeVar = TypeVar("ObsType")
 
@@ -99,10 +121,10 @@ class AlpacaTradingEnvironment:
 
     def get_state_dict(self) -> dict[str, Any]:
 
-        state_dict:dict[str, Any] = {}
+        state_dict: dict[str, Any] = {}
         individual_stock_data_list: list[HistoricalStockDataObj] = self.get_individual_stock_data_list()
 
-        market_features_dict:dict[str, float] = self.get_market_features_dict()
+        market_features_dict: dict[str, float] = self.get_market_features_dict()
 
         for data_obj in individual_stock_data_list:
             self.logger.info(f"data_obj.observation_num = {data_obj.observation_num}")
@@ -161,7 +183,6 @@ class AlpacaTradingEnvironment:
                 historical_stock_data_list.append(historical_stock_obj)
 
         return historical_stock_data_list
-
 
     def _get_data_file_path(self) -> Path:
 
