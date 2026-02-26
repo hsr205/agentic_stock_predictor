@@ -1,10 +1,10 @@
+import asyncio
 from logging import Logger
-
 from logger.logger import AppLogger
 from trading_account.alpaca_trading_environment import AlpacaTradingEnvironment
+from datetime import datetime, time
 
-
-def main() -> int:
+async def main() -> int:
     logger: Logger = AppLogger().get_logger(__name__)
 
     try:
@@ -22,7 +22,8 @@ def main() -> int:
         # logger.info("=" * 100)
         # alpaca_trading_env.get_individual_stock_data_list()
 
-        alpaca_trading_env.get_state_dict()
+
+        await alpaca_trading_env.execute_trading_environment()
 
 
     except Exception as e:
@@ -32,4 +33,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
