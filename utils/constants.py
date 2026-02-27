@@ -1,5 +1,3 @@
-from typing import Any
-
 from alpaca.trading.enums import OrderSide
 
 
@@ -11,6 +9,7 @@ class Constants:
 
     ALPACA_ACCOUNT_URL: str = "https://paper-api.alpaca.markets/v2/account"
 
+    ORDER_SIDE_ACTIONS_LIST: list[OrderSide] = [OrderSide.BUY, OrderSide.SELL]
     ACTIONS_LIST: list[OrderSide | str] = [OrderSide.BUY, OrderSide.SELL, "HOLD"]
 
     TICKER_SYMBOL_LIST: list[str] = ["TSLA", "AAPL", "META", "AMZN", "MSFT", "NVDA", "GOOGL"]
