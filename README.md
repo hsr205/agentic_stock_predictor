@@ -1,4 +1,4 @@
-# Agentic Stock Trader
+# Reinforcement Learning Trading Agent
 
 <p align="center">
   An agent-based reinforcement learning system for intelligent stock prediction and decision-making.
