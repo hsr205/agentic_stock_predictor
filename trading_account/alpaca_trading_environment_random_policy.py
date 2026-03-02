@@ -100,6 +100,7 @@ class AlpacaTradingEnvironmentRandomPolicy:
                         current_time=current_time,
                         portfolio_equity=portfolio_equity,
                         portfolio_cash_available=portfolio_cash_available,
+                        market_features_dict=market_features_dict
                     )
 
                 else:
