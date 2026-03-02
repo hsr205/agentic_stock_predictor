@@ -5,7 +5,7 @@ from asyncio import Task
 from collections import deque
 from datetime import datetime, time
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any
 from zoneinfo import ZoneInfo
 
 from alpaca.data.live import StockDataStream
@@ -14,7 +14,6 @@ from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderSide, TimeInForce, OrderType
 from alpaca.trading.models import Order
 from alpaca.trading.requests import MarketOrderRequest
-from torch import Tensor
 
 from config.config import settings
 from logger.logger import AppLogger
@@ -22,9 +21,9 @@ from trading_account.alpaca_trading_account import AlpacaTradingAccount
 from utils.constants import Constants
 from utils.trading_activity_csv_writer import TradingActivityCsvWriter
 
+
 # TODO: Consider moving some of the methods in this class to a helper class
 class AlpacaTradingEnvironmentRandomPolicy:
-    ObsType: TypeVar = TypeVar("ObsType")
     alpaca_trading_account: AlpacaTradingAccount = AlpacaTradingAccount()
 
     def __init__(self) -> None:
@@ -51,12 +50,6 @@ class AlpacaTradingEnvironmentRandomPolicy:
 
         # thread-safe handoff to your RL consumer loop
         self._bar_queue.put(bar_dict)
-
-    # TODO: Implement this method
-    def step(self, action_str: str) -> tuple[ObsType, Tensor, bool, bool, dict[str, Any]]:
-        pass
-
-        # return observation, reward_tensor, terminated, truncated, _
 
     async def initialize_trading_environment_random_policy(self) -> None:
 
