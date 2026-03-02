@@ -27,6 +27,7 @@ class AlpacaTradingEnvironmentRandomPolicy:
     alpaca_trading_account: AlpacaTradingAccount = AlpacaTradingAccount()
 
     def __init__(self) -> None:
+        self._base_directory: Path = Path.cwd()
         self._api_key_random: str = settings.api_key_random
         self._bar_queue: queue.Queue[dict] = queue.Queue()
         self._bar_history: deque[dict] = deque(maxlen=5000)
@@ -34,8 +35,9 @@ class AlpacaTradingEnvironmentRandomPolicy:
         self._action_space: list[str] = Constants.ACTIONS_LIST
         self._first_bar_event: asyncio.Event = asyncio.Event()
         self._close_of_market_time: time = time(16, 0)
+        self._logs_directory_path: Path = self._get_logs_directory_path()
         self._api_secret_key_random: str = settings.api_secret_key_random
-        self._trading_csv_writer: TradingActivityCsvWriter = TradingActivityCsvWriter(_base_dir=Path.cwd())
+        self._trading_csv_writer: TradingActivityCsvWriter = TradingActivityCsvWriter(_base_dir=self._base_directory)
         self._trading_client: TradingClient = TradingClient(api_key=self._api_key_random,
                                                             secret_key=self._api_secret_key_random, paper=True)
         self.logger = AppLogger.get_logger(self.__class__.__name__)
@@ -84,16 +86,18 @@ class AlpacaTradingEnvironmentRandomPolicy:
                 if random_action != "HOLD":
 
                     portfolio_equity: float = state_data_dict.get("equity")
-                    current_timestamp: datetime = state_data_dict.get("timestamp")
                     portfolio_cash_available: float = state_data_dict.get("cash")
+                    current_time: time = state_data_dict.get("timestamp").astimezone(
+                        ZoneInfo("America/New_York")).time()
 
                     self.logger.info(
-                        f"Timestep: {current_time_step} -> Timestamp: {current_timestamp} -> Portfolio Equity: {portfolio_equity:,.2f} -> Portfolio Cash Available: ${portfolio_cash_available:,.2f}")
+                        f"Timestep: {current_time_step} -> Timestamp: {current_time} -> Portfolio Equity: {portfolio_equity:,.2f} -> Portfolio Cash Available: ${portfolio_cash_available:,.2f}")
                     self.logger.info("=" * 150)
 
                     self._trading_csv_writer.append_row_to_csv(
+                        logs_directory_path=self._logs_directory_path,
                         timestep=current_time_step,
-                        timestamp=current_timestamp,
+                        current_time=current_time,
                         portfolio_equity=portfolio_equity,
                         portfolio_cash_available=portfolio_cash_available,
                     )
@@ -176,7 +180,6 @@ class AlpacaTradingEnvironmentRandomPolicy:
 
                 random_quantity = random.randint(1, max_valid_quantity)
 
-                # (Optional) sanity affordability check using the *actual* random_quantity
                 transaction_cost: float = current_stock_price * random_quantity
                 if transaction_cost > current_cash_t:
                     random_quantity_dict[ticker_symbol_str] = (0, current_stock_price, order_side)
@@ -285,6 +288,12 @@ class AlpacaTradingEnvironmentRandomPolicy:
 
         except Exception as e:
             self.logger.warning(f"Exception Thrown: {e}")
+
+    def _get_logs_directory_path(self) -> Path:
+        current_datetime: datetime = datetime.now()
+        date_directory_name: str = current_datetime.strftime("%Y-%m-%d")
+        logs_directory_path: Path = self._base_directory / "logs" / "random_trading_activity" / date_directory_name
+        return logs_directory_path
 
     def _get_random_order_side_action(self) -> OrderSide | str:
         return random.choice(self._action_space)
