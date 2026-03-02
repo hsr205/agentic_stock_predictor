@@ -269,7 +269,7 @@ class AlpacaTradingEnvironmentRandomPolicy:
                     stock_qty_available: int = int(value.get("qty_available"))
                     stock_current_price: float = float(value.get("current_price"))
 
-                    if stock_quantity < 0 or stock_qty_available < 0:
+                    if stock_quantity <= 0 or stock_qty_available <= 0:
                         quantity_to_buy = abs(stock_quantity)
 
                         market_order_request: MarketOrderRequest = MarketOrderRequest(
