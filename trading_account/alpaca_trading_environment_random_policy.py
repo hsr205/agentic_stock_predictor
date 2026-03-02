@@ -206,6 +206,24 @@ class AlpacaTradingEnvironmentRandomPolicy:
                 if stock_quantity <= 0 and stock_action == OrderSide.SELL:
                     continue
 
+                elif stock_quantity == 0:
+                    market_order_request: MarketOrderRequest = MarketOrderRequest(
+                        symbol=ticker_symbol_str,
+                        qty=1,
+                        side=OrderSide.BUY,
+                        order_type=OrderType.MARKET,
+                        time_in_force=TimeInForce.DAY
+                    )
+
+                    market_order: Order = self._trading_client.submit_order(
+                        order_data=market_order_request
+                    )
+
+                    market_order_qty_int: int = int(market_order.qty)
+
+                    self.logger.info(
+                        f"Successfully {market_order.side.name} {market_order_qty_int} share(s) of {market_order.symbol} @ ${stock_purchase_price:,.2f} for ${stock_purchase_price * market_order_qty_int:,.2f}")
+
                 market_order_request: MarketOrderRequest = MarketOrderRequest(
                     symbol=ticker_symbol_str,
                     qty=stock_quantity,
