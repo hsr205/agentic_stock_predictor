@@ -261,9 +261,7 @@ class AlpacaTradingEnvironmentRandomPolicy:
 
         try:
 
-            self.logger.info("=" * 50)
             self.logger.info("Balancing Portfolio")
-            self.logger.info("=" * 50)
 
             ticker_symbol_list = Constants.TICKER_SYMBOL_LIST
 
