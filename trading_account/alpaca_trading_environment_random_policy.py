@@ -95,7 +95,7 @@ class AlpacaTradingEnvironmentRandomPolicy:
                     portfolio_cash_available: float = state_data_dict.get("cash")
 
                     self.logger.info(
-                        f"Timestep: {current_time_step} -> Timestamp: {current_timestamp} -> Portfolio Equity: {portfolio_equity:,2f} -> Portfolio Cash Available: ${portfolio_cash_available:,.2f}")
+                        f"Timestep: {current_time_step} -> Timestamp: {current_timestamp} -> Portfolio Equity: {portfolio_equity:,.2f} -> Portfolio Cash Available: ${portfolio_cash_available:,.2f}")
                     self.logger.info("=" * 150)
 
                     self._trading_csv_writer.append_row_to_csv(
