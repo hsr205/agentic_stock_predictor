@@ -261,20 +261,21 @@ class AlpacaTradingEnvironmentRandomPolicy:
 
         try:
 
-            for key, value in state_data_dict.items():
+            self.logger.info("=" * 50)
+            self.logger.info("Balancing Portfolio")
+            self.logger.info("=" * 50)
 
-                if isinstance(value, dict):
+            ticker_symbol_list = Constants.TICKER_SYMBOL_LIST
 
-                    stock_quantity: int = int(value.get("quantity"))
-                    stock_qty_available: int = int(value.get("qty_available"))
-                    stock_current_price: float = float(value.get("current_price"))
+            missing_ticker_symbols_set:set[str] = set(ticker_symbol_list) - set(state_data_dict.keys())
 
-                    if stock_quantity <= 0 or stock_qty_available <= 0:
-                        quantity_to_buy = abs(stock_quantity)
+            if missing_ticker_symbols_set:
+
+                for ticker_symbol in missing_ticker_symbols_set:
 
                         market_order_request: MarketOrderRequest = MarketOrderRequest(
-                            symbol=key,
-                            qty=quantity_to_buy,
+                            symbol=ticker_symbol,
+                            qty=1,
                             side=OrderSide.BUY,
                             order_type=OrderType.MARKET,
                             time_in_force=TimeInForce.DAY
@@ -285,7 +286,7 @@ class AlpacaTradingEnvironmentRandomPolicy:
                         )
 
                         self.logger.info(
-                            f"Successful {market_order.side.name} {market_order.qty} share(s) of {market_order.symbol} @ ${stock_current_price:,.2f}")
+                            f"Successful {market_order.side.name} {market_order.qty} share(s) of {market_order.symbol}")
 
         except Exception as e:
             self.logger.warning(f"Exception Thrown: {e}")
