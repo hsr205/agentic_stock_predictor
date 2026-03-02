@@ -14,6 +14,10 @@ async def main() -> int:
 
         await alpaca_trading_env_random_policy.initialize_trading_environment_random_policy()
 
+        # alpaca_trading_env_ppo: AlpacaTradingEnvironmentPPO = AlpacaTradingEnvironmentPPO()
+        #
+        # await alpaca_trading_env_ppo.initialize_trading_environment_ppo()
+
 
     except Exception as e:
         logger.info(f"Exception Thrown: {e}")
