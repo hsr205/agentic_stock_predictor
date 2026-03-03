@@ -31,7 +31,7 @@ class TradingActivityCsvWriter:
 
         return self._csv_path
 
-    def append_row_to_csv(self, *, logs_directory_path: Path, timestep: int, current_time: time,
+    def append_row_to_csv(self, *, logs_directory_path: Path, timestep: int, current_datetime: datetime,
                           portfolio_equity: float,
                           portfolio_cash_available: float, market_features_dict: dict[str, Any]) -> None:
         csv_path: Path = self._ensure_directory_creation(logs_directory_path=logs_directory_path)
@@ -49,7 +49,7 @@ class TradingActivityCsvWriter:
             writer.writerow(
                 [
                     timestep,
-                    current_time.isoformat(),
+                    current_datetime.isoformat(),
                     f"{portfolio_equity:.2f}",
                     f"{portfolio_cash_available:.2f}",
                     f"{apple_stock_quantity}",
