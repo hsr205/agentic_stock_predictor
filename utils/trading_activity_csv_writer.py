@@ -36,7 +36,7 @@ class TradingActivityCsvWriter:
 
     def _get_positions_dict(self, all_positions_list: list[Position]) -> dict[str, int]:
 
-        positions_dict: dict[str, float] = {}
+        positions_dict: dict[str, int] = {}
 
         for position_obj in all_positions_list:
 
