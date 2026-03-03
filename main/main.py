@@ -2,7 +2,7 @@ import asyncio
 from logging import Logger
 
 from logger.logger import AppLogger
-from trading_account.alpaca_trading_environment_random_policy import AlpacaTradingEnvironmentRandomPolicy
+from models.alpaca_trading_environment_random_policy import AlpacaTradingEnvironmentRandomPolicy
 
 
 async def main() -> int:
