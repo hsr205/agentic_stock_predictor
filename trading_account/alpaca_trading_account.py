@@ -8,6 +8,7 @@ from logger.logger import AppLogger
 from utils.constants import Constants
 
 
+# TODO: Consider removing this class
 class AlpacaTradingAccount:
 
     def __init__(self) -> None:
