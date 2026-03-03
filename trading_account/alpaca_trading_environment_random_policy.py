@@ -42,6 +42,7 @@ class AlpacaTradingEnvironmentRandomPolicy:
                                                             secret_key=self._api_secret_key_random, paper=True)
         self.logger = AppLogger.get_logger(self.__class__.__name__)
 
+    # TODO: Move the following to a helper class
     async def _handle_bar(self, data) -> None:
         data_bar: Bar = data
         bar_dict: dict = data.model_dump()
@@ -62,7 +63,7 @@ class AlpacaTradingEnvironmentRandomPolicy:
 
         try:
 
-            data_stream.subscribe_bars(self._handle_bar, "AAPL", "TSLA", "META", "AMZN", "MSFT", "NVDA", "GOOGL")
+            data_stream.subscribe_bars(self._handle_bar, *Constants.TICKER_SYMBOL_LIST)
 
             stream_task: Task = asyncio.create_task(asyncio.to_thread(data_stream.run))
 
@@ -120,15 +121,9 @@ class AlpacaTradingEnvironmentRandomPolicy:
                     self.logger.info("=" * 200)
                     break
 
-                # <-- THIS is where you build your (s, a, r, s') transition
-                # e.g.:
-                # s  = build_state(latest_bar_dict, market_features_dict, ...)
-                # a  = agent.act(s)
-                # r  = reward(...)
-                # s2 = next_state(...)
                 current_time_step += 1
 
-            await stream_task  # (won't reach in infinite loop unless you break)
+            await stream_task
 
         except Exception as e:
             self.logger.error(f"Exception Thrown: {e}")
