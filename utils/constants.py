@@ -22,5 +22,12 @@ class Constants:
         "TSLA": 1_007
     }
 
+    TICKER_FEATURES_LIST: list[str] = [
+        "portfolio_weight",
+        "cost_basis_to_portfolio_value",
+        "unrealized_pl_to_portfolio_value",
+        "change_today"
+    ]
+
     TICKER_SYMBOL_LIST: list[str] = ["AAPL", "AMZN", "GOOGL", "META", "MSFT", "NVDA", "TSLA"]
     CSV_OUTPUT_COLUMNS_LIST: list[str] = ["Timestep", "Timestamp", "Portfolio Equity", "Portfolio Cash Available"] + TICKER_SYMBOL_LIST
