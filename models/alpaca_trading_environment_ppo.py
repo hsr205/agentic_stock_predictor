@@ -6,25 +6,17 @@ from datetime import datetime, time
 from pathlib import Path
 from typing import Any
 from typing import TypeVar
-from typing import Union
 from zoneinfo import ZoneInfo
 
 import numpy as np
 import torch
-from alpaca.common import RawData
-from alpaca.data import StockLatestQuoteRequest, Quote
-from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.live import StockDataStream
-from alpaca.trading import Position
 from alpaca.trading.client import TradingClient
-from alpaca.trading.enums import OrderSide, TimeInForce, OrderType
-from alpaca.trading.models import Order
-from alpaca.trading.requests import MarketOrderRequest
-from torch import multiprocessing, device
+from torch import multiprocessing, device, Tensor
 
 from config.config import settings
 from logger.logger import AppLogger
-from trading_account.alpaca_trading_account import AlpacaTradingAccount
+from trading_account.alpaca_trading_portfolio import AlpacaTradingPortfolio
 from utils.constants import Constants
 from utils.trading_activity_csv_writer import TradingActivityCsvWriter
 
@@ -32,9 +24,9 @@ from utils.trading_activity_csv_writer import TradingActivityCsvWriter
 # TODO: Use unsloth
 class AlpacaTradingEnvironmentPPO:
     ObsType: TypeVar = TypeVar("ObsType")
-    alpaca_trading_account: AlpacaTradingAccount = AlpacaTradingAccount()
 
     def __init__(self) -> None:
+
         self._base_directory: Path = Path.cwd()
         self._api_key_ppo: str = settings.api_key_ppo
         self._bar_queue: queue.Queue[dict] = queue.Queue()
@@ -47,29 +39,29 @@ class AlpacaTradingEnvironmentPPO:
         self._api_secret_key_ppo: str = settings.api_secret_key_ppo
         self._logs_directory_path: Path = self._get_logs_directory_path()
         self._trading_csv_writer: TradingActivityCsvWriter = TradingActivityCsvWriter(_base_dir=self._base_directory)
+        self._cost_coefficient_tensor: torch.Tensor = torch.tensor(data=0.001,
+                                                                   device=self._device,
+                                                                   dtype=torch.float32)
         self._trading_client: TradingClient = TradingClient(api_key=self._api_key_ppo,
                                                             secret_key=self._api_secret_key_ppo, paper=True)
 
-        self._historical_trading_client: StockHistoricalDataClient = StockHistoricalDataClient(
-            api_key=self._api_key_ppo,
-            secret_key=self._api_secret_key_ppo)
+        self._alpaca_trading_account: AlpacaTradingPortfolio = AlpacaTradingPortfolio(device=self._device,
+                                                                                      trading_client=self._trading_client)
+
         self.logger = AppLogger.get_logger(self.__class__.__name__)
 
     async def _handle_bar(self, data) -> None:
         bar_dict: dict = data.model_dump()
 
-        # store latest + history if you want
         self._latest_bar_dict = bar_dict
         self._bar_history.append(bar_dict)
 
-        # thread-safe handoff to your RL consumer loop
         self._bar_queue.put(bar_dict)
 
     async def initialize_trading_environment_ppo(self) -> None:
         pass
 
-    # TODO: Implement this method
-    # async def step(self, action_str: str) -> tuple[ObsType, Tensor, bool, bool, dict[str, Any]]:
+    # async def step(self, action_str: str) -> tuple[Tensor, float, bool, bool, dict[str, Any]]:
     async def step(self) -> None:
 
         data_stream: StockDataStream = StockDataStream(api_key=self._api_key_ppo,
@@ -83,28 +75,43 @@ class AlpacaTradingEnvironmentPPO:
             stream_task: Task = asyncio.create_task(asyncio.to_thread(data_stream.run))
 
             current_time_step: int = 1
+            reward_list: list[float] = []
 
             current_time_est: time = datetime.now().astimezone(ZoneInfo("America/New_York")).time()
             is_terminal: bool = current_time_est >= self._close_of_market_time
 
             while True:
 
-                account_dict: dict[str, float] = self._get_account_dict()
-                all_positions_list: list[Position] = self._trading_client.get_all_positions()
+                self._alpaca_trading_account.balance_empty_portfolio()
 
-                self.logger.info("=" * 100)
+                account_dict_t: dict[str, float] = self._alpaca_trading_account.get_account_dict()
+                all_positions_list_t = self._trading_client.get_all_positions()
 
-                self._balance_empty_portfolio(all_positions_list=all_positions_list, account_dict=account_dict)
+                observation_tensor_t, per_ticker_array_t = self._alpaca_trading_account.get_ticker_feature_collections(
+                    all_positions_list=all_positions_list_t, account_dict=account_dict_t)
 
-                account_dict = self._get_account_dict()
-                all_positions_list = self._trading_client.get_all_positions()
+                self._execute_trades(action="")
 
-                position_features_array: np.ndarray = self._get_position_features_array(
-                    all_positions_list=all_positions_list, account_dict=account_dict)
+                account_dict_t_1 = self._alpaca_trading_account.get_account_dict()
+                all_positions_list_t_1 = self._trading_client.get_all_positions()
+
+                observation_tensor_t_1, per_ticker_array_t_1 = self._alpaca_trading_account.get_ticker_feature_collections(
+                    all_positions_list=all_positions_list_t_1, account_dict=account_dict_t_1)
+
+                if not reward_list:
+                    reward_list.append(0.0)
+
+                reward: float = self._get_reward(account_dict_t=account_dict_t,
+                                                 account_dict_t_1=account_dict_t_1,
+                                                 per_ticker_array_t=per_ticker_array_t,
+                                                 per_ticker_array_t_1=per_ticker_array_t_1)
+
+                self.logger.info(f"reward = {reward}")
 
                 if is_terminal:
                     self.logger.info(f"Broken at timestep: {current_time_step}")
                     self.logger.info("=" * 200)
+                    # return observation_array, reward, is_terminal, truncated
                     break
 
                 current_time_step += 1
@@ -113,167 +120,47 @@ class AlpacaTradingEnvironmentPPO:
 
             await stream_task
 
+        # return observation_array, reward, is_terminal, truncated
+
         except Exception as e:
             self.logger.error(f"Exception Thrown: {e}")
 
-        # return observation, reward_tensor, is_terminal, truncated, _
+    def _execute_trades(self, action) -> None:
+        pass
 
-    def _get_position_features_array(self, all_positions_list: list[Position],
-                                     account_dict: dict[str, float]) -> np.ndarray:
+    def _get_reward(self, account_dict_t: dict[str, float], account_dict_t_1: dict[str, float],
+                    per_ticker_array_t: np.ndarray, per_ticker_array_t_1: np.ndarray) -> float:
 
-        ticker_features_list: list[str] = Constants.TICKER_FEATURES_LIST
-        positions_dict: dict[int, dict[str, float]] = self._get_positions_dict(
-            all_positions_list=all_positions_list, account_dict=account_dict)
+        current_portfolio_value_tensor: torch.Tensor = torch.tensor(
+            data=account_dict_t.get("portfolio_value", 0.0),
+            device=self._device,
+            dtype=torch.float32
+        )
 
-        all_matrix_rows: list[list[float]] = []
+        new_portfolio_value_tensor: torch.Tensor = torch.tensor(
+            data=account_dict_t_1.get("portfolio_value", 0.0),
+            device=self._device,
+            dtype=torch.float32
+        )
 
-        for ticker_id_num in Constants.TICKER_SYMBOL_TO_ID.values():
-            ticker_dict: dict[str, float] = positions_dict.get(ticker_id_num, {})
+        portfolio_weights_tensor_t: Tensor = self._alpaca_trading_account.get_portfolio_weights_tensor(
+            per_ticker_array=per_ticker_array_t)
 
-            matrix_row_list: list[float] = []
+        portfolio_weights_tensor_t_1: Tensor = self._alpaca_trading_account.get_portfolio_weights_tensor(
+            per_ticker_array=per_ticker_array_t_1)
 
-            for feature_str in ticker_features_list:
-                feature_value: float | Any = ticker_dict.get(feature_str, 0.0)
-                matrix_row_list.append(float(feature_value))
+        turnover_value: torch.Tensor = torch.sum(
+            torch.abs(portfolio_weights_tensor_t_1 - portfolio_weights_tensor_t),
+            dtype=torch.float32
+        )
 
-            all_matrix_rows.append(matrix_row_list)
+        safe_denominator: torch.Tensor = torch.clamp(current_portfolio_value_tensor, min=1e-12)
+        portfolio_delta_log_return: torch.Tensor = torch.log(new_portfolio_value_tensor / safe_denominator)
+        reward_tensor: torch.Tensor = portfolio_delta_log_return - self._cost_coefficient_tensor * turnover_value
 
-        per_ticker_array: np.ndarray = np.array(all_matrix_rows, dtype=np.float32)
+        reward: float = float(reward_tensor.item())
 
-        flat_observation_array: np.ndarray = per_ticker_array.reshape(-1)
-
-        self.logger.info(f"flat_observation_array = {flat_observation_array}")
-
-        return flat_observation_array
-
-    def _balance_empty_portfolio(self, all_positions_list: list[Position], account_dict: dict[str, Any]) -> None:
-
-        try:
-
-            if not all_positions_list:
-
-                stock_quotes_request: StockLatestQuoteRequest = StockLatestQuoteRequest(
-                    symbol_or_symbols=Constants.TICKER_SYMBOL_LIST
-                )
-
-                latest_quotes: Union[
-                    dict[str, Quote], RawData] = self._historical_trading_client.get_stock_latest_quote(
-                    request_params=stock_quotes_request)
-
-                portfolio_value: float = account_dict.get("portfolio_value", 0.0)
-                investment_per_ticker_symbol: float = portfolio_value * 0.01
-
-                for ticker_symbol_str in Constants.TICKER_SYMBOL_LIST:
-                    stock_bid_price: float = float(latest_quotes[ticker_symbol_str].bid_price)
-
-                    num_shares: float = investment_per_ticker_symbol / stock_bid_price
-
-                    market_order_request: MarketOrderRequest = MarketOrderRequest(
-                        symbol=ticker_symbol_str,
-                        qty=num_shares,
-                        side=OrderSide.BUY,
-                        order_type=OrderType.MARKET,
-                        time_in_force=TimeInForce.DAY
-                    )
-
-                    market_order: Order = self._trading_client.submit_order(
-                        order_data=market_order_request
-                    )
-
-                    self.logger.info(
-                        f"Successfully {market_order.side.name} {float(market_order.qty):,.2f} share(s) of {market_order.symbol}")
-
-        except Exception as e:
-            self.logger.warning(f"Exception Thrown: {e}")
-
-    def _get_positions_dict(self, all_positions_list: list[Position], account_dict: dict[str, float]) -> dict[
-        int, dict[str, float]]:
-
-        positions_dict: dict[int, dict[str, float]] = {}
-
-        self._populate_missing_ticker_entries(all_positions_list=all_positions_list, account_dict=account_dict,
-                                              positions_dict=positions_dict)
-
-        for position_obj in all_positions_list:
-            ticker_symbol_str: str = position_obj.symbol
-
-            ticker_symbol_id: int = Constants.TICKER_SYMBOL_TO_ID.get(ticker_symbol_str, 99_999)
-
-            cash: float = account_dict.get("cash", 0.0)
-            buying_power: float = account_dict.get("buying_power", 0.0)
-            portfolio_value: float = account_dict.get("portfolio_value", 0.0)
-
-            market_value: float = float(position_obj.market_value)
-            qty_available: float = float(position_obj.qty_available)
-
-            cash_to_portfolio_value: float = cash / portfolio_value
-            portfolio_weight: float = market_value / portfolio_value
-            buying_power_to_portfolio_value: float = buying_power / portfolio_value
-            cost_basis_to_portfolio_value: float = float(position_obj.cost_basis) / portfolio_value
-            unrealized_pl_to_portfolio_value: float = float(position_obj.unrealized_pl) / portfolio_value
-
-            ticker_dict: dict[str, float] = {
-                "qty_available": qty_available,
-                "portfolio_value": portfolio_value,
-                "portfolio_weight": portfolio_weight,
-                "cash_to_portfolio_value": cash_to_portfolio_value,
-                "cost_basis_to_portfolio_value": cost_basis_to_portfolio_value,
-                "buying_power_to_portfolio_value": buying_power_to_portfolio_value,
-                "unrealized_pl_to_portfolio_value": unrealized_pl_to_portfolio_value,
-                "change_today": float(position_obj.change_today),
-            }
-
-            positions_dict[ticker_symbol_id] = ticker_dict
-
-        return positions_dict
-
-    def _populate_missing_ticker_entries(self, all_positions_list: list[Position], account_dict: dict[str, float],
-                                         positions_dict: dict[int, dict[str, float]]) -> None:
-
-        full_ticker_symbol_list: list[str] = Constants.TICKER_SYMBOL_LIST
-        positions_str_list: list[str] = self._get_positions_str_list(all_positions_list=all_positions_list)
-
-        for ticker_symbol_str in full_ticker_symbol_list:
-
-            if ticker_symbol_str not in positions_str_list:
-                ticker_symbol_id: int = Constants.TICKER_SYMBOL_TO_ID.get(ticker_symbol_str, 99_999)
-
-                cash: float = account_dict.get("cash", 0.0)
-                buying_power: float = account_dict.get("buying_power", 0.0)
-                portfolio_value: float = account_dict.get("portfolio_value", 0.0)
-
-                cash_to_portfolio_value: float = cash / portfolio_value
-                buying_power_to_portfolio_value: float = buying_power / portfolio_value
-
-                ticker_dict: dict[str, float] = {
-                    "qty_available": 0.0,
-                    "position_value": 0.0,
-                    "portfolio_weight": 0.0,
-                    "portfolio_value": portfolio_value,
-                    "cost_basis_to_portfolio_value": 0.0,
-                    "unrealized_pl_to_portfolio_value": 0.0,
-                    "cash_to_portfolio_value": cash_to_portfolio_value,
-                    "buying_power_to_portfolio_value": buying_power_to_portfolio_value,
-                    "change_today": 0.0,
-                }
-
-                positions_dict[ticker_symbol_id] = ticker_dict
-
-    def _get_account_dict(self) -> dict[str, Any]:
-
-        account_dict: dict[str, Any] = self._trading_client.get_account().model_dump()
-
-        result_dict: dict[str, Any] = {
-
-            "cash": float(account_dict.get("cash", 0.0)),
-            "equity": float(account_dict.get("equity", 0.0)),
-            "buying_power": float(account_dict.get("buying_power", 0.0)),
-            "portfolio_value": float(account_dict.get("portfolio_value", 0.0)),
-            "daytrading_buying_power": float(account_dict.get("daytrading_buying_power", 0.0))
-
-        }
-
-        return result_dict
+        return reward
 
     def _get_processing_device(self) -> device:
 
@@ -291,7 +178,3 @@ class AlpacaTradingEnvironmentPPO:
         date_directory_name: str = current_datetime.strftime("%Y-%m-%d")
         logs_directory_path: Path = self._base_directory / "logs" / "ppo_trading_activity" / date_directory_name
         return logs_directory_path
-
-    def _get_positions_str_list(self, all_positions_list: list[Position]) -> list[str]:
-        positions_str_list: list[str] = [x.symbol for x in all_positions_list]
-        return positions_str_list
